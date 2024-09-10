@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>search</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            input {
+                width: 100%;
+                padding: 10px;
+                font-size: 16px;
+                border-radius: 10px;
+                border: 1px solid #9b9898;
+                outline: none;
+            }
+            #results {
+                margin-top: 20px;
+            }
+            .loading {
+                color: #888;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Type any fruit name to search</h1>
+        <input type="text" id="searchInput" placeholder="Type to search..." />
+        <div id="results"></div>
+
+        <script>
+            const searchInput = document.getElementById('searchInput');
+            const resultsDiv = document.getElementById('results');
+            let debounceTimer;
+            function simulateAPI(query) {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        const fruits = [
+                            'apple',
+                            'apricot',
+                            'banana',
+                            'blackberry',
+                            'blueberry',
+                            'cherry',
+                            'coconut',
+                            'grape',
+                            'kiwi',
+                            'lemon',
+                            'lime',
+                            'mango',
+                            'orange',
+                            'papaya',
+                            'peach',
+                            'pear',
+                            'pineapple',
+                            'plum',
+                            'raspberry',
+                            'strawberry',
+                        ];
+                        const results = fruits.filter((fruit) =>
+                            fruit.toLowerCase().includes(query.toLowerCase())
+                        );
+                        resolve(results);
+                    }, 1000);
+                });
+            }
+
+            function debouncedSearch(query) {
+                clearTimeout(debounceTimer);
+                resultsDiv.innerHTML = '<p class="loading">Loading...</p>';
+
+                debounceTimer = setTimeout(() => {
+                    simulateAPI(query).then((results) => {
+                        if (results.length > 0) {
+                            resultsDiv.innerHTML =
+                                '<ul>' +
+                                results
+                                    .map((result) => `<li>${result}</li>`)
+                                    .join('') +
+                                '</ul>';
+                        } else {
+                            resultsDiv.innerHTML = '<p>No results found.</p>';
+                        }
+                    });
+                }, 500);
+            }
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                if (query) {
+                    debouncedSearch(query);
+                } else {
+                    resultsDiv.innerHTML = '';
+                }
+            });
+        </script>
+    </body>
+</html>
